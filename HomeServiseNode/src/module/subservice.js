@@ -1,7 +1,6 @@
 const { mongoose } = require("../db/mongoos");
 
 const HomeService = mongoose.Schema({
-  subserviceid:{type:Number,trim:true,unique: true},
   servicename: { type: String, trim: true },
   subservicename: { type: String, trim: true },
   url: { type: String },

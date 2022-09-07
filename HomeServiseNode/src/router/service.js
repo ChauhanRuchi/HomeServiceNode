@@ -4,16 +4,19 @@ const { verfiytoken } = require("../middlewere/auth");
 const upload = require("../utils/multer");
 const app = express();
 
-const { service1, getsubservice, servicecre,getservice } = require("../conteroller/service");
+const { createSubService, getsubservice, createService,getservice,deleteService,deleteSubService} = require("../conteroller/service");
 
 
 //post api in create service
 app.post(
   "/HomeService/service",
   [upload.single("image"), verfiytoken],
-  servicecre
+  createService
 );
-app.post("/HomeService/subservice", upload.single("image"), service1);
+app.post("/HomeService/subservice", upload.single("image"), createSubService);
 app.get("/HomeService/getsubservice", getsubservice);
-app.get("/Homeservice/getservice",getservice)
+app.get("/HomeService/getservice",getservice)
+app.delete("/HomeService/deleteservice/:_id",verfiytoken,deleteService)
+app.delete("/HomeService/deletesubservice/:_id",verfiytoken,deleteSubService)
+
 module.exports = app;

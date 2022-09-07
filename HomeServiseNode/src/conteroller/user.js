@@ -25,19 +25,19 @@ const register = async (req, res) => {
       let result = "";
       result = await data
         .save()
-        .then((result) => res.status(201).json("sign up done..."))
+        .then((result) => res.status(201).json({message:"sign up done...",signup:true}))
         .catch((err) =>
-          res.status(400).send({ mes: "email is already exit..." })
+          res.status(400).send({ message: "email is already exit..."})
         );
     }
   } catch (error) {
     res.status(500).send(error);
   }
 };
-
 //sign in router...
 const login = async (req, res) => {
   try {
+    console.log(validator.validate(req.body.formdata.email))
     let data = await signup.find({
       email: req.body.formdata.email,
     });
@@ -46,18 +46,19 @@ const login = async (req, res) => {
     } else if (req.body.formdata.password === "") {
       res.status(400).send({ mes: "please enter password.." });
     } else if (validator.validate(req.body.formdata.email) == false) {
-      res.status(400).status.send({ mes: "please enter password.." });
+      res.status(400).send({ mes: "please enter valid email address.." });
     } else if (data.length != 0) {
       isMatch = await bcrypt.compare(
         req.body.formdata.password,
         data[0].password
       );
+      console.log( data[0].password)
       if (isMatch == true)
         res.status(200).json({
           login: "successfully login... ",
           Token: auth(req.body.formdata.email, req.body.formdata.password),
         });
-      else res.status(400).send({ mes: "Wrong Credentials.." });
+      else res.status(400).send({ mes: "Wrong Credentials1.." });
     } else if (data.length == 0) {
       res.status(400).send({ mes: "Wrong Credentials.." });
     }

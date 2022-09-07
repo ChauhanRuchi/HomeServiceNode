@@ -46,14 +46,16 @@ const adminlogin = async (req, res) => {
       req.body.formdata.email === undefined
     ) {
       res.status(400).send({ mes: "please enter email" });
-    } else if (
+    }
+    else if (validator.validate(req.body.formdata.email) == false) {
+      res.status(400).send({ mes: "please enter valid email address.." });
+    }
+     else if (
       req.body.formdata.password === "" ||
       req.body.formdata.password === undefined
     ) {
       res.status(400).send({ mes: "please enter password.." });
-    } else if (validator.validate(req.body.formdata.email) == false) {
-      res.status(400).status.send({ mes: "please enter password.." });
-    } else if (data.length != 0) {
+    }  else if (data.length != 0) {
       isMatch = await bcrypt.compare(
         req.body.formdata.password,
         data[0].password

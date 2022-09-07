@@ -1,14 +1,17 @@
 const service = require("../module/service");
+let ObjectID = require('mongodb').ObjectID;
+
 const jsonwebtoken = require("jsonwebtoken");
 const subservice = require("../module/subservice");
 const cloudinary = require("../utils/cloudnary");
 const upload = require("../utils/multer");
-const { default: mongoose } = require("mongoose");
+const { default: mongoose, isValidObjectId } = require("mongoose");
 let resultimg = "";
 
-const servicecre = async (req, res) => {
-  
+const createService = async (req, res) => {
+
   try {
+    console.log(req.body.formdata)
     jsonwebtoken.verify(req.token, "screatekey", async (err, authdata) => {
       if (err) res.send(err);
       else console.log(req.body);
@@ -23,11 +26,12 @@ const servicecre = async (req, res) => {
           servicename: req.body.servicename,
           decription: req.body.decription,
           url: resultimg.url,
+          public_id:resultimg.public_id
         });
         let result = "";
         result = data
           .save()
-          .then((result) => res.status(201).json({ mes: "Add Service" }))
+          .then((result) => res.status(201).json({ mes: "Add Service" ,resultimg}))
           .catch((err) => res.status(400).send({ mes: err }));
       }
     });
@@ -35,7 +39,21 @@ const servicecre = async (req, res) => {
     res.send(error);
   }
 };
-const service1 = async (req, res) => {
+const getservice = async (req, res) => {
+  let servicedata=service.find({_id:new ObjectID("63188c7c1c3250a01936e2e7")},{})
+    console.log(servicedata)
+  try {
+    let getservice = await service.find();
+    if (getservice == null) {
+      res.status(400).send("service not found..");
+    } else {
+      res.status(200).send(getservice);
+    }
+  } catch (error) {
+    res.status(500).send(error);
+  }
+};
+const createSubService = async (req, res) => {
   try {
     if (req.body.servicename === undefined || "") {
       res.status(400).send({ mes: "please enter servicename" });
@@ -51,7 +69,6 @@ const service1 = async (req, res) => {
         servicename: req.body.servicename,
         subservicename: req.body.subservicename,
         decription: req.body.decription,
-        adminname: req.body.adminname,
         url: result1.url,
       });
       let result = "";
@@ -77,16 +94,73 @@ const getsubservice = async (req, res) => {
     res.status(500).send(error);
   }
 };
-const getservice = async (req, res) => {
+const deleteService = async (req, res) => {
   try {
-    let getservice = await service.find();
-    if (getservice == null) {
-      res.status(400).send("service not found..");
-    } else {
-      res.status(200).send(getservice);
-    }
+    let data = await service.findByIdAndDelete(req.params);
+
+    jsonwebtoken.verify(
+      req.token,
+      "screatekey",
+      (err, authdata) => {
+        if (err) {
+          res.sendStatus(403);
+        } else if (data == null) {
+          res.status(400).send({message:"service not found"});
+        } else {
+          res.status(200).send(data);
+        }
+      }
+    );
   } catch (error) {
     res.status(500).send(error);
   }
 };
-module.exports = { service1, getsubservice, servicecre, getservice };
+const deleteSubService = async (req, res) => {
+  try {
+    let data = await subservice.findByIdAndDelete(req.params);
+
+    jsonwebtoken.verify(
+      req.token,
+      "screatekey",
+      (err, authdata) => {
+        if (err) {
+          res.sendStatus(403);
+        } else if (data == null) {
+          res.status(400).send({message:"SubService not found"});
+        } else {
+          res.status(200).send(data);
+        }
+      }
+    );
+  } catch (error) {
+    res.status(500).send(error);
+  }
+};
+const editService = async (req, res) => {
+  try {
+    cloudinary.uploader.destroy("jccbvlcr9tazujwnmrg8",(err ,result)=>{
+    });
+  
+    let data = await service.findByIdAndUpdate(req.params, {
+      servicename: req.body.servicename,
+      decription: req.body.decription,
+    });
+
+    jsonwebtoken.verify(
+      req.token,
+      "ghjkjhgfdsdfghjkiuytrertyuioiwert",
+      (err, authdata) => {
+        if (err) {
+          res.sendStatus(403);
+        } else if (data == null) {
+          res.status(400).send("artical not found");
+        } else {
+          res.status(200).send(data);
+        }
+      }
+    );
+  } catch (error) {
+    res.status(500).send(error);
+  }
+};
+module.exports = { createSubService, getsubservice, createService, getservice,deleteService,deleteSubService};
