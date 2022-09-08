@@ -67,4 +67,20 @@ const login = async (req, res) => {
   }
 };
 
+const logout=async(req,res)=>{
+  try {
+    localStorage.removeItem(req.body);
+    let data=signup.findOneAndDelete(req.body);
+    if(data==null){
+      res.status(400).send("please login");
+    }
+    else{
+      res.status(200).send({message:"successfully logout..."})
+    }
+
+  } catch (error) {
+    
+  }
+
+}
 module.exports = { register, login };

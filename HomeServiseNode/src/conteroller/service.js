@@ -40,8 +40,7 @@ const createService = async (req, res) => {
   }
 };
 const getservice = async (req, res) => {
-  let servicedata=service.find({_id:new ObjectID("63188c7c1c3250a01936e2e7")},{})
-    console.log(servicedata)
+ 
   try {
     let getservice = await service.find();
     if (getservice == null) {
@@ -55,19 +54,18 @@ const getservice = async (req, res) => {
 };
 const createSubService = async (req, res) => {
   try {
+    console.log(req.body)
     if (req.body.servicename === undefined || "") {
       res.status(400).send({ mes: "please enter servicename" });
-    } else if (req.body.subservicename === undefined || "") {
-      res.status(400).send({ mes: "please enter subservicename" });
+    } else if (req.body.serviceid=== undefined || "") {
+      res.status(400).send({ mes: "please select subservicename" });
     } else if (req.body.decription === undefined || "") {
       res.status(400).send({ mes: "enter your servicedecription" });
-    } else if (req.body.adminname === undefined || "") {
-      res.status(400).send({ mes: "enter your name" });
     } else {
       let result1 = await cloudinary.uploader.upload(req.file.path);
       let data = new subservice({
+        serviceid:req.body.serviceid,
         servicename: req.body.servicename,
-        subservicename: req.body.subservicename,
         decription: req.body.decription,
         url: result1.url,
       });
@@ -79,6 +77,19 @@ const createSubService = async (req, res) => {
     }
   } catch (error) {
     res.status(500).send({ mes: error });
+  }
+};
+const getsubservicebyservice = async (req, res) => {
+  try {
+    let getsubservice = await subservice.find({serviceid:req.params});
+    if (getsubservice == null) {
+      res.status(400).send("service not found..");
+    } 
+    else {
+      res.status(200).send(getsubservice);
+    }
+  } catch (error) {
+    res.status(500).send(error);
   }
 };
 const getsubservice = async (req, res) => {
@@ -137,18 +148,22 @@ const deleteSubService = async (req, res) => {
   }
 };
 const editService = async (req, res) => {
+  let servicedata=await service.findById(req.params)
+ let public_id=servicedata.public_id;
   try {
-    cloudinary.uploader.destroy("jccbvlcr9tazujwnmrg8",(err ,result)=>{
+    cloudinary.uploader.destroy(public_id,(err ,result)=>{
     });
-  
+    let result1 = await cloudinary.uploader.upload(req.file.path);
+
     let data = await service.findByIdAndUpdate(req.params, {
+      url:result1.url,
       servicename: req.body.servicename,
       decription: req.body.decription,
     });
 
     jsonwebtoken.verify(
       req.token,
-      "ghjkjhgfdsdfghjkiuytrertyuioiwert",
+      "screatekey",
       (err, authdata) => {
         if (err) {
           res.sendStatus(403);
@@ -163,4 +178,36 @@ const editService = async (req, res) => {
     res.status(500).send(error);
   }
 };
-module.exports = { createSubService, getsubservice, createService, getservice,deleteService,deleteSubService};
+const editSubService = async (req, res) => {
+  let servicedata=await subservice.findById(req.params)
+ let public_id=servicedata.public_id;
+  try {
+    cloudinary.uploader.destroy(public_id,(err ,result)=>{
+    });
+    let result1 = await cloudinary.uploader.upload(req.file.path);
+
+    let data = await service.findByIdAndUpdate(req.params, {
+      url:result1.url,
+      servicename: req.body.servicename,
+      subservicename: req.body.subservicename,
+      decription: req.body.decription,
+    });
+
+    jsonwebtoken.verify(
+      req.token,
+      "screatekey",
+      (err, authdata) => {
+        if (err) {
+          res.sendStatus(403);
+        } else if (data == null) {
+          res.status(400).send("artical not found");
+        } else {
+          res.status(200).send(data);
+        }
+      }
+    );
+  } catch (error) {
+    res.status(500).send(error);
+  }
+};
+module.exports = { createSubService, getsubservice, createService, getservice,deleteService,deleteSubService,editService,editSubService,getsubservicebyservice};
