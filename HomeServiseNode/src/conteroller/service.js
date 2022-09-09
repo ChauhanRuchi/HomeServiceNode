@@ -155,11 +155,14 @@ const editService = async (req, res) => {
     });
     let result1 = await cloudinary.uploader.upload(req.file.path);
 
-    let data = await service.findByIdAndUpdate(req.params, {
-      url:result1.url,
+    let editService={
+      url:result1?.url,
       servicename: req.body.servicename,
       decription: req.body.decription,
-    });
+    }
+  
+
+    let data = await service.findByIdAndUpdate(req.params, editService);
 
     jsonwebtoken.verify(
       req.token,
@@ -168,7 +171,7 @@ const editService = async (req, res) => {
         if (err) {
           res.sendStatus(403);
         } else if (data == null) {
-          res.status(400).send("artical not found");
+          res.status(400).send("service not found");
         } else {
           res.status(200).send(data);
         }
