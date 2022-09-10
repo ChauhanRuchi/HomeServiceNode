@@ -4,7 +4,7 @@ const Admin = require("../module/Admin");
 const validator = require("email-validator");
 const { default: mongoose } = require("mongoose");
 let isMatch = "";
-
+let result="";
 //sign up router.....
 const admin = async (req, res) => {
   try {
@@ -61,6 +61,7 @@ const adminlogin = async (req, res) => {
         data[0].password
       );
       if (isMatch == true)
+          
         res.status(200).json({
           login: true,
           Token: auth(req.body.formdata.email, req.body.formdata.password),
@@ -74,4 +75,44 @@ const adminlogin = async (req, res) => {
   }
 };
 
-module.exports = { adminlogin ,admin};
+const changepassword=async(req,res)=>{
+  try {
+    let data=await Admin.find({email:req.body.email});
+      if(req.body.oldpassword==""||req.body.oldpassword==undefined){
+        res.status(400).send("please enter old password");
+      }
+      else if(req.body.newpassword==""||req.body.newpassword==undefined){
+        res.status(400).send("please enter new password");
+      }
+      else if(req.body.confirmpassword==""||req.body.confirmpassword==undefined){
+        res.status(400).send("please enter confirm password");
+      }
+      else if (data.length != 0) {
+        isMatch = await bcrypt.compare(
+          req.body.password,
+          data[0].password
+        );
+        if (isMatch == true)
+
+          res.status(200).json({
+            changepassword: true,
+           message:"succefully change password",
+          });
+          else{
+              res.status()
+          }
+        }
+     
+  } catch (error) {
+    res.send(error)
+  }
+}
+const logout=async(req,res)=>{
+  try {
+     let Token=localStorage.getItem("AdminToken");
+     res.send("token",Token)
+  } catch (error) {
+    res.send(error)
+  }
+}
+module.exports = { adminlogin ,admin,changepassword,logout};

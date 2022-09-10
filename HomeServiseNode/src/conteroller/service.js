@@ -148,20 +148,26 @@ const deleteSubService = async (req, res) => {
   }
 };
 const editService = async (req, res) => {
+  let result1="",URL="";
   let servicedata=await service.findById(req.params)
  let public_id=servicedata.public_id;
   try {
     cloudinary.uploader.destroy(public_id,(err ,result)=>{
     });
-    let result1 = await cloudinary.uploader.upload(req.file.path);
+    if(req.body.image==undefined){
+      URL=servicedata.url
+    }
+    else{
+     result1 = await cloudinary.uploader.upload(req.file.path);
+     URL=result1?.url;
+    }
 
     let editService={
-      url:result1?.url,
-      servicename: req.body.servicename,
-      decription: req.body.decription,
+      url:URL,
+      servicename: req.body.servicename||servicedata.servicename,
+      decription: req.body.decription||servicedata.decription,
     }
   
-
     let data = await service.findByIdAndUpdate(req.params, editService);
 
     jsonwebtoken.verify(
@@ -172,7 +178,8 @@ const editService = async (req, res) => {
           res.sendStatus(403);
         } else if (data == null) {
           res.status(400).send("service not found");
-        } else {
+        } 
+        else {
           res.status(200).send(data);
         }
       }
