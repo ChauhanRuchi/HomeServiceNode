@@ -8,6 +8,7 @@ let auth = (email, password) => {
   return token;
 };
 let verfiytoken = (req, res, next) => {
+  console.log("verify", req.body);
   const bearerheader = req.headers["authorization"];
   if (typeof bearerheader !== "undefined") {
     const bearer = bearerheader.split(" ");

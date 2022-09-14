@@ -83,6 +83,7 @@ const changepassword=async(req,res)=>{
       req.token,
       "screatekey",
      async (err, authdata) => {
+      console.log(req.body.formdata.oldpassword)
         let data=await Admin.find({email:req.body.email});
         haspass = await bcrypt.hash(req.body.confirmpassword, 10);
         if(req.body.formdata.oldpassword==""||req.body.formdata.oldpassword==undefined){

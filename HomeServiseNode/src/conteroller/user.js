@@ -55,7 +55,7 @@ const login = async (req, res) => {
       console.log( data[0].password)
       if (isMatch == true)
         res.status(200).json({
-          login: "successfully login... ",
+          login:true,
           Token: auth(req.body.formdata.email, req.body.formdata.password),
         });
       else res.status(400).send({ mes: "Wrong Credentials1.." });
