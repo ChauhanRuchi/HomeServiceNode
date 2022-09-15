@@ -7,6 +7,7 @@ const { default: mongoose } = require("mongoose");
 let isMatch = "";
 let result="";
 let haspass = "";
+let data="";
 //sign up router.....
 const admin = async (req, res) => {
   try {
@@ -76,17 +77,17 @@ const adminlogin = async (req, res) => {
     res.status(500).send(error);
   }
 };
-
 const changepassword=async(req,res)=>{
   try {
     jsonwebtoken.verify(
       req.token,
       "screatekey",
      async (err, authdata) => {
-      console.log(req.body.formdata.oldpassword)
-        let data=await Admin.find({email:req.body.email});
+       data=await Admin.find({email:"Chauhanruchi212@gmail.com"});
         haspass = await bcrypt.hash(req.body.confirmpassword, 10);
-        if(req.body.formdata.oldpassword==""||req.body.formdata.oldpassword==undefined){
+
+        console.log("tyyyyyy",req.body)
+        if(req.body.oldpassword==""||req.body.oldpassword==undefined){
             res.status(400).send("please enter old password");
           }
           else if(req.body.newpassword==""||req.body.newpassword==undefined){

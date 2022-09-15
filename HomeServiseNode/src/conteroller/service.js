@@ -55,6 +55,7 @@ const getservice = async (req, res) => {
 const createSubService = async (req, res) => {
   try {
     console.log(req.body)
+    let getservice = await service.find({_id:req.body.serviceid});
     if (req.body.servicename === undefined || "") {
       res.status(400).send({ mes: "please enter servicename" });
     } else if (req.body.serviceid=== undefined || "") {
@@ -65,6 +66,7 @@ const createSubService = async (req, res) => {
       let result1 = await cloudinary.uploader.upload(req.file.path);
       let data = new subservice({
         serviceid:req.body.serviceid,
+        mainservice:getservice[0].servicename,
         servicename: req.body.servicename,
         decription: req.body.decription,
         url: result1.url,
@@ -220,4 +222,22 @@ const editSubService = async (req, res) => {
     res.status(500).send(error);
   }
 };
-module.exports = { createSubService, getsubservice, createService, getservice,deleteService,deleteSubService,editService,editSubService,getsubservicebyservice};
+const searchbyid=async(req,res)=>{
+  try {
+    let getservice = await service.find({_id:req.params});
+    console.log(getservice[0].servicename)
+
+    if (getservice == null) {
+      res.status(400).send("service not found..");
+    } 
+    else {
+      res.status(200).send(getservice[0].servicename);
+    }
+  } catch (error) {
+    res.status(500).send(error);
+  }
+}
+
+module.exports = { createSubService, getsubservice, createService, 
+  getservice,deleteService,deleteSubService,editService,editSubService,getsubservicebyservice
+,searchbyid};
