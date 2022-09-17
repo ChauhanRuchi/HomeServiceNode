@@ -7,7 +7,8 @@ const cloudinary = require("../utils/cloudnary");
 const upload = require("../utils/multer");
 const { default: mongoose, isValidObjectId } = require("mongoose");
 let resultimg = "";
-
+let result1 = "",
+    URL = "";
 const createService = async (req, res) => {
   try {
     console.log(req.body.formdata);
@@ -62,7 +63,11 @@ const createSubService = async (req, res) => {
       res.status(400).send({ mes: "please select subservicename" });
     } else if (req.body.decription === undefined || "") {
       res.status(400).send({ mes: "enter your servicedecription" });
-    } else {
+    } 
+    else if (req.body.charge === undefined || "") {
+      res.status(400).send({ mes: "enter service charge.." });
+    } 
+    else {
       let result1 = await cloudinary.uploader.upload(req.file.path);
       let data = new subservice({
         serviceid: req.body.serviceid,
@@ -140,15 +145,11 @@ const deleteSubService = async (req, res) => {
   }
 };
 const editService = async (req, res) => {
-  let result1 = "",
-    URL = "";
+  
   let servicedata = await service.findById(req.params);
-
-  console.log(req.body);
 
   try {
     try {
-      console.log("---", req.file);
       if (req.file !== undefined) {
         let public_id = servicedata.public_id;
         cloudinary.uploader.destroy(public_id, (err, result) => {});
@@ -182,16 +183,23 @@ const editService = async (req, res) => {
   }
 };
 const editSubService = async (req, res) => {
-  let servicedata = await subservice.findById(req.params);
-  let public_id = servicedata.public_id;
   try {
-    cloudinary.uploader.destroy(public_id, (err, result) => {});
-    let result1 = await cloudinary.uploader.upload(req.file.path);
+    let servicedata = await subservice.findById(req.params);
+    try {
+  
+      if (req.file !== undefined) {
+        let public_id = servicedata.public_id;
+        cloudinary.uploader.destroy(public_id, (err, result) => {});
+        let result1 = await cloudinary.uploader.upload(req.file.path);
+        URL = result1?.image;
+      }
+    } catch (error) {
+      console.log("path..", error);
+    }
 
-    let data = await service.findByIdAndUpdate(req.params, {
-      url: result1.url,
+    let data = await subservice.findByIdAndUpdate(req.params, {
+      url:URL||subservice.url,
       servicename: req.body.servicename,
-      subservicename: req.body.subservicename,
       decription: req.body.decription,
     });
 
@@ -205,6 +213,7 @@ const editSubService = async (req, res) => {
       }
     });
   } catch (error) {
+    console.log("error.....",error)
     res.status(500).send(error);
   }
 };

@@ -36,7 +36,7 @@ app.patch(
   upload.single("image"),
   editService
 );
-app.put(
+app.patch(
   "/HomeService/editsubservice/:_id",
   verfiytoken,
   upload.single("image"),
