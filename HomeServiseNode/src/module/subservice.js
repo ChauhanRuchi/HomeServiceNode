@@ -6,7 +6,7 @@ const HomeService = mongoose.Schema({
   servicename: { type: String, trim: true },
   url: { type: String },
   decription: { type: String, trim: true },
-  adminname: { type: String, trim: true },
+  charge: { type: String, trim: true },
 });
 
 module.exports = mongoose.model("subservice", HomeService);

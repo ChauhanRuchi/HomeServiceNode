@@ -75,6 +75,7 @@ const createSubService = async (req, res) => {
         servicename: req.body.servicename,
         decription: req.body.decription,
         url: result1.url,
+        charge:req.body.charge
       });
       let result = "";
       result = data
