@@ -14,7 +14,8 @@ const {
   deleteSubService,
   editService,
   editSubService,
-  searchbyid
+  searchbyid,
+  getsubservicebyid
 } = require("../conteroller/service");
 
 //post api in create service
@@ -28,6 +29,8 @@ app.get("/HomeService/getservicebysub/:_id", getsubservicebyservice);
 app.get("/HomeService/getservice", getservice);
 app.get("/HomeService/getsubservice", getsubservice);
 app.get("/HomeService/getsearchbyid/:_id", searchbyid);
+app.get("/HomeService/getsubservicebyid/:_id", getsubservicebyid);
+
 app.delete("/HomeService/deleteservice/:_id", verfiytoken, deleteService);
 app.delete("/HomeService/deletesubservice/:_id", verfiytoken, deleteSubService);
 app.patch(

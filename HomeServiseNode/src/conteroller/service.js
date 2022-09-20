@@ -232,6 +232,19 @@ const searchbyid = async (req, res) => {
     res.status(500).send(error);
   }
 };
+const getsubservicebyid = async (req, res) => {
+  try {
+    let getsubservice = await subservice.find({ _id: req.params });
+   
+    if (getsubservice == null) {
+      res.status(400).send("service not found..");
+    } else {
+      res.status(200).send(getsubservice);
+    }
+  } catch (error) {
+    res.status(500).send(error);
+  }
+};
 
 module.exports = {
   createSubService,
@@ -244,4 +257,5 @@ module.exports = {
   editSubService,
   getsubservicebyservice,
   searchbyid,
+  getsubservicebyid
 };

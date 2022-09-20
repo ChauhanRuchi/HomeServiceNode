@@ -20,6 +20,7 @@ const getBookingdata = async (req, res) => {
 };
 const CreBooking = async (req, res) => {
   try {
+    console.log(req.body)
     jsonwebtoken.verify(req.token, "screatekey", async (err, authdata) => {
 
       if (req.body.name == "" || req.body.name == undefined) {
