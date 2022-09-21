@@ -39,7 +39,8 @@ const CreBooking = async (req, res) => {
         res.status(400).send("please enter your delivery address");
       } else if (req.body.city == "" || req.body.city == undefined) {
         res.status(400).send("please select city ");
-      } else if (req.body.date == "" || req.body.date == undefined) {
+      } 
+      else if (req.body.date == "" || req.body.date == undefined) {
         res.status(400).send("please select delivery date");
       } else if (req.body.time == "" || req.body.time == undefined) {
         res.status(400).send("please select delivery time");
@@ -68,9 +69,14 @@ const City = async (req, res) => {
   try {
     if (req.body.name == undefined || req.body.name == "") {
       res.status(400).send("please enter cityname");
-    } else {
+    } 
+    if (req.body.pincode == undefined || req.body.pincode == "") {
+      res.status(400).send("please enter pincode");
+    } 
+    else {
       data = new city({
         name: req.body.name,
+        pincode:req.body.pincode
       });
       result = await data
         .save()

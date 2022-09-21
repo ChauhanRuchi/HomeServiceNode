@@ -3,11 +3,13 @@ const bcrypt = require("bcrypt");
 const signup = require("../module/user");
 const validator = require("email-validator");
 const { default: mongoose } = require("mongoose");
+const {mailsend}=require("../module/MailSend")
 let isMatch = "";
 
 //sign up router.....
 const register = async (req, res) => {
   try {
+
     console.log(req.body.formdata.email);
     if (req.body.formdata.email === "") {
       res.status(400).send({ mes: "please enter email" });
@@ -25,10 +27,12 @@ const register = async (req, res) => {
       let result = "";
       result = await data
         .save()
-        .then((result) => res.status(201).json({message:"sign up done...",signup:true}))
+        .then((result) => res.status(201).json({mes:"sign up done...",signup:true}))
         .catch((err) =>
-          res.status(400).send({ message: "email is already exit..."})
+          res.status(400).send({ mes: "email is already exit..."})
         );
+        mailsend({email:req.body.formdata.email})
+
     }
   } catch (error) {
     res.status(500).send(error);
@@ -66,5 +70,19 @@ const login = async (req, res) => {
     res.status(500).send(error);
   }
 };
+const getuserdata=async(req,res)=>{
+  try {
+    let userdata = await signup.find();
+    if (userdata == null) {
+      res.status(400).send("not user data");
+    } else {
+      res.status(200).send(userdata);
+    }
+  } catch (error) {
+    res.status(500).send(error);
+  }
+}
 
-module.exports = { register, login };
+
+
+module.exports = { register, login,getuserdata };
