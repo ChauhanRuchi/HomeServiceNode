@@ -134,4 +134,6 @@ const logout=async(req,res)=>{
     res.send(error)
   }
 }
+
+
 module.exports = { adminlogin ,admin,changepassword,logout};
