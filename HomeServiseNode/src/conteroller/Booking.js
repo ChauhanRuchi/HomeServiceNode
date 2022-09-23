@@ -44,7 +44,8 @@ const CreBooking = async (req, res) => {
         res.status(400).send("please select delivery date");
       } else if (req.body.time == "" || req.body.time == undefined) {
         res.status(400).send("please select delivery time");
-      } else {
+      } 
+      else {
         data = new Booking({
           name: req.body.name,
           contactnumber: req.body.number,
@@ -53,6 +54,9 @@ const CreBooking = async (req, res) => {
           city: req.body.city,
           date: req.body.date,
           time: req.body.time,
+          charge:req.body.charge,
+          status:req.body.status,
+          servicename:req.body.servicename
         });
         result = await data
           .save()
@@ -129,7 +133,42 @@ const getavailabletime = async (req, res) => {
     res.status(500).send(error);
   }
 };
+const statusupdate = async (req, res) => {
 
+  try {
+
+    let editService = {
+      status:req.body.status
+    };
+
+    let data = await Booking.findByIdAndUpdate(req.params, editService);
+
+   
+     if (data == null) {
+        res.status(400).send("data not found");
+      } else {
+        res.status(200).send(data);
+      }
+  
+  } catch (error) {
+    console.log(error);
+    res.status(500).send(error);
+  }
+};
+
+const getbookingdatabyid = async (req, res) => {
+  try {
+    let getbooingdata = await Booking.find({ _id: req.params });
+   
+    if (getbooingdata == null) {
+      res.status(400).send("data not found..");
+    } else {
+      res.status(200).send(getbooingdata);
+    }
+  } catch (error) {
+    res.status(500).send(error);
+  }
+};
 module.exports = {
  getBookingdata,
   CreBooking,
@@ -137,4 +176,6 @@ module.exports = {
   getcityname,
   availabletime,
   getavailabletime,
+  statusupdate,
+  getbookingdatabyid
 };

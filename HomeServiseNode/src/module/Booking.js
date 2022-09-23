@@ -7,7 +7,10 @@ const HomeService = mongoose.Schema({
  deliveryadress:{type:String,trim:true},
  city:{type:String,trim:true},
  date:{type:String,trim:true},
- time:{type:String,trim:true}
+ time:{type:String,trim:true},
+  charge:{type:String,trim:true},
+ status:{type:String,trim:true},
+ servicename:{type:String,trim:true},
 });
 
 module.exports = mongoose.model("Booking", HomeService);

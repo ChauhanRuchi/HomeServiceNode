@@ -82,8 +82,11 @@ const createSubService = async (req, res) => {
         .save()
         .then((result) => res.status(201).json({ mes: "Add Service", result1 }))
         .catch((err) => res.status(400).send({ mes: err }));
+        console.log(res)
+
     }
   } catch (error) {
+    console.log(error)
     res.status(500).send({ mes: error });
   }
 };
