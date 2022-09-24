@@ -83,7 +83,7 @@ const changepassword=async(req,res)=>{
       req.token,
       "screatekey",
      async (err, authdata) => {
-       data=await Admin.find({email:"Chauhanruchi212@gmail.com"});
+       data=await Admin.find({email:"Owner212@gmail.com"});
         haspass = await bcrypt.hash(req.body.confirmpassword, 10);
 
         console.log("tyyyyyy",req.body)
@@ -101,6 +101,7 @@ const changepassword=async(req,res)=>{
           }
     
           else if (data.length != 0) {
+            console.log("...",isMatch)
             isMatch = await bcrypt.compare(
               req.body.oldpassword,
               data[0].password

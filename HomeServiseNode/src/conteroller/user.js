@@ -70,6 +70,56 @@ const login = async (req, res) => {
     res.status(500).send(error);
   }
 };
+
+const changepassword=async(req,res)=>{
+  try {
+    jsonwebtoken.verify(
+      req.token,
+      "screatekey",
+     async (err, authdata) => {
+       data=await User.find({email:"Chauhanruchi212@gmail.com"});
+        haspass = await bcrypt.hash(req.body.confirmpassword, 10);
+
+        console.log("tyyyyyy",req.body)
+        if(req.body.oldpassword==""||req.body.oldpassword==undefined){
+            res.status(400).send("please enter old password");
+          }
+          else if(req.body.newpassword==""||req.body.newpassword==undefined){
+            res.status(400).send("please enter new password");
+          }
+          else if(req.body.confirmpassword==""||req.body.confirmpassword==undefined){
+            res.status(400).send("please enter confirm password");
+          }
+          else if(req.body.newpassword!==req.body.confirmpassword){
+            res.status(400).send({message:"password not match.."})
+          }
+    
+          else if (data.length != 0) {
+            console.log("...",isMatch)
+            isMatch = await bcrypt.compare(
+              req.body.oldpassword,
+              data[0].password
+            );
+             result=await User.updateOne({password:data[0].password},{password:haspass})
+    
+            if (isMatch == true){
+                 res.status(200).send({
+                   changepassword: true,
+                  message:"succefully change password"+result,
+                 });
+            }
+         
+              else{
+                res.status(400).send("old password is wrong...")
+              }
+            }
+      })
+     
+  } catch (error) {
+    console.log(error)
+    res.send(error)
+  }
+}
 const getuserdata=async(req,res)=>{
   try {
     let userdata = await signup.find();
@@ -85,4 +135,4 @@ const getuserdata=async(req,res)=>{
 
 
 
-module.exports = { register, login,getuserdata };
+module.exports = { register, login,getuserdata,changepassword};
