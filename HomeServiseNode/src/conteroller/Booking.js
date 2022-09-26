@@ -52,7 +52,7 @@ const CreBooking = async (req, res) => {
           billingaddress: req.body.billingaddress,
           deliveryadress: req.body.deliveryadress,
           city: req.body.city,
-          date: req.body.date,
+          date: req.body.date.substring(0,10),
           time: req.body.time,
           charge:req.body.charge,
           status:req.body.status,

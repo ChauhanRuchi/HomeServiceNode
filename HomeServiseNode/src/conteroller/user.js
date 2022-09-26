@@ -59,6 +59,7 @@ const login = async (req, res) => {
       console.log( data[0].password)
       if (isMatch == true)
         res.status(200).json({
+          email:req.body.formdata.email,
           login:true,
           Token: auth(req.body.formdata.email, req.body.formdata.password),
         });
