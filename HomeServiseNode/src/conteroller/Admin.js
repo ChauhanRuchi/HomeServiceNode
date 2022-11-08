@@ -1,28 +1,29 @@
 const { auth } = require("../middlewere/auth");
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const Admin = require("../module/Admin");
+const admins = require("../module/Admin");
+
 const validator = require("email-validator");
 const jsonwebtoken = require("jsonwebtoken");
 const { default: mongoose } = require("mongoose");
 let isMatch = "";
-let result="";
+let result = "";
 let haspass = "";
-let data="";
+let data = "";
 //sign up router.....
 const admin = async (req, res) => {
   try {
-    console.log(req.body.email);
-    if (req.body.email === "") {
+    console.log(req.body.formdata.email);
+    if (req.body.formdata.email === "") {
       res.status(400).send({ mes: "please enter email" });
-    } else if (validator.validate(req.body.email) == false) {
+    } else if (validator.validate(req.body.formdata.email) == false) {
       res.status(400).send({ mes: "please enter valid email" });
-    } else if (req.body.password === "") {
+    } else if (req.body.formdata.password === "") {
       res.status(400).send({ mes: "please enter password" });
     } else {
-     
-      haspass = await bcrypt.hash(req.body.password, 10);
+      haspass = await bcrypt.hash(req.body.formdata.password, 10);
       let data = new Admin({
-        email: req.body.email,
+        email: req.body.formdata.email,
         password: haspass,
       });
       let result = "";
@@ -39,32 +40,32 @@ const admin = async (req, res) => {
 };
 //sign in router...
 const adminlogin = async (req, res) => {
+
   try {
+    console.log("admin..",Admin.find())
+
     let data = await Admin.find({
       email: req.body.formdata.email,
     });
-    
+
     if (
       req.body.formdata.email === "" ||
       req.body.formdata.email === undefined
     ) {
       res.status(400).send({ mes: "please enter email" });
-    }
-    else if (validator.validate(req.body.formdata.email) == false) {
+    } else if (validator.validate(req.body.formdata.email) == false) {
       res.status(400).send({ mes: "please enter valid email address.." });
-    }
-     else if (
+    } else if (
       req.body.formdata.password === "" ||
       req.body.formdata.password === undefined
     ) {
       res.status(400).send({ mes: "please enter password.." });
-    }  else if (data.length != 0) {
+    } else if (data.length != 0) {
       isMatch = await bcrypt.compare(
         req.body.formdata.password,
         data[0].password
       );
       if (isMatch == true)
-          
         res.status(200).json({
           login: true,
           Token: auth(req.body.formdata.email, req.body.formdata.password),
@@ -77,64 +78,58 @@ const adminlogin = async (req, res) => {
     res.status(500).send(error);
   }
 };
-const changepassword=async(req,res)=>{
+const changepassword = async (req, res) => {
   try {
-    jsonwebtoken.verify(
-      req.token,
-      "screatekey",
-     async (err, authdata) => {
-       data=await Admin.find({email:"Owner212@gmail.com"});
-        haspass = await bcrypt.hash(req.body.confirmpassword, 10);
+    jsonwebtoken.verify(req.token, "screatekey", async (err, authdata) => {
+      data = await Admin.find({ email: "Owner212@gmail.com" });
+      haspass = await bcrypt.hash(req.body.confirmpassword, 10);
 
-        console.log("tyyyyyy",req.body)
-        if(req.body.oldpassword==""||req.body.oldpassword==undefined){
-            res.status(400).send("please enter old password");
-          }
-          else if(req.body.newpassword==""||req.body.newpassword==undefined){
-            res.status(400).send("please enter new password");
-          }
-          else if(req.body.confirmpassword==""||req.body.confirmpassword==undefined){
-            res.status(400).send("please enter confirm password");
-          }
-          else if(req.body.newpassword!==req.body.confirmpassword){
-            res.status(400).send({message:"password not match.."})
-          }
-    
-          else if (data.length != 0) {
-            console.log("...",isMatch)
-            isMatch = await bcrypt.compare(
-              req.body.oldpassword,
-              data[0].password
-            );
-             result=await Admin.updateOne({password:data[0].password},{password:haspass})
-    
-            if (isMatch == true){
-                 res.status(200).send({
-                   changepassword: true,
-                  message:"succefully change password"+result,
-                 });
-            }
-         
-              else{
-                res.status(400).send("old password is wrong...")
-              }
-            }
-      })
-     
+      console.log("tyyyyyy", req.body);
+      if (req.body.oldpassword == "" || req.body.oldpassword == undefined) {
+        res.status(400).send("please enter old password");
+      } else if (
+        req.body.newpassword == "" ||
+        req.body.newpassword == undefined
+      ) {
+        res.status(400).send("please enter new password");
+      } else if (
+        req.body.confirmpassword == "" ||
+        req.body.confirmpassword == undefined
+      ) {
+        res.status(400).send("please enter confirm password");
+      } else if (req.body.newpassword !== req.body.confirmpassword) {
+        res.status(400).send({ message: "password not match.." });
+      } else if (data.length != 0) {
+        console.log("...", isMatch);
+        isMatch = await bcrypt.compare(req.body.oldpassword, data[0].password);
+        result = await Admin.updateOne(
+          { password: data[0].password },
+          { password: haspass }
+        );
+
+        if (isMatch == true) {
+          res.status(200).send({
+            changepassword: true,
+            message: "succefully change password" + result,
+          });
+        } else {
+          res.status(400).send("old password is wrong...");
+        }
+      }
+    });
   } catch (error) {
-    console.log(error)
-    res.send(error)
+    console.log(error);
+    res.send(error);
   }
-}
-const logout=async(req,res)=>{
+};
+const logout = async (req, res) => {
   try {
-     let Token=localStorage.getItem("AdminToken");
-     console.log("Token....", req.body.Token)
-     res.status(200).send("token",localStorage.getItem("AdminToken"))
+    let Token = localStorage.getItem("AdminToken");
+    console.log("Token....", req.body.Token);
+    res.status(200).send("token", localStorage.getItem("AdminToken"));
   } catch (error) {
-    res.send(error)
+    res.send(error);
   }
-}
+};
 
-
-module.exports = { adminlogin ,admin,changepassword,logout};
+module.exports = { adminlogin, admin, changepassword, logout };
