@@ -8,7 +8,7 @@ const upload = require("../utils/multer");
 const { default: mongoose, isValidObjectId } = require("mongoose");
 let resultimg = "";
 let result1 = "",
-    URL = "";
+  URL = "";
 const createService = async (req, res) => {
   try {
     console.log(req.body.formdata);
@@ -63,11 +63,9 @@ const createSubService = async (req, res) => {
       res.status(400).send({ mes: "please select subservicename" });
     } else if (req.body.decription === undefined || "") {
       res.status(400).send({ mes: "enter your servicedecription" });
-    } 
-    else if (req.body.charge === undefined || "") {
+    } else if (req.body.charge === undefined || "") {
       res.status(400).send({ mes: "enter service charge.." });
-    } 
-    else {
+    } else {
       let result1 = await cloudinary.uploader.upload(req.file.path);
       let data = new subservice({
         serviceid: req.body.serviceid,
@@ -75,18 +73,17 @@ const createSubService = async (req, res) => {
         servicename: req.body.servicename,
         decription: req.body.decription,
         url: result1.url,
-        charge:req.body.charge
+        charge: req.body.charge,
       });
       let result = "";
       result = data
         .save()
         .then((result) => res.status(201).json({ mes: "Add Service", result1 }))
         .catch((err) => res.status(400).send({ mes: err }));
-        console.log(res)
-
+      console.log(res);
     }
   } catch (error) {
-    console.log(error)
+    console.log(error);
     res.status(500).send({ mes: error });
   }
 };
@@ -149,7 +146,6 @@ const deleteSubService = async (req, res) => {
   }
 };
 const editService = async (req, res) => {
-  
   let servicedata = await service.findById(req.params);
 
   try {
@@ -190,7 +186,6 @@ const editSubService = async (req, res) => {
   try {
     let servicedata = await subservice.findById(req.params);
     try {
-  
       if (req.file !== undefined) {
         let public_id = servicedata.public_id;
         cloudinary.uploader.destroy(public_id, (err, result) => {});
@@ -202,7 +197,7 @@ const editSubService = async (req, res) => {
     }
 
     let data = await subservice.findByIdAndUpdate(req.params, {
-      url:URL||subservice.url,
+      url: URL || subservice.url,
       servicename: req.body.servicename,
       decription: req.body.decription,
     });
@@ -217,7 +212,7 @@ const editSubService = async (req, res) => {
       }
     });
   } catch (error) {
-    console.log("error.....",error)
+    console.log("error.....", error);
     res.status(500).send(error);
   }
 };
@@ -238,11 +233,24 @@ const searchbyid = async (req, res) => {
 const getsubservicebyid = async (req, res) => {
   try {
     let getsubservice = await subservice.find({ _id: req.params });
-   
+
     if (getsubservice == null) {
       res.status(400).send("service not found..");
     } else {
       res.status(200).send(getsubservice);
+    }
+  } catch (error) {
+    res.status(500).send(error);
+  }
+};
+
+const getservicesearchbyid = async (req, res) => {
+  try {
+    let getservice = await service.find({ _id: { $in: req.body.id } });
+    if (getservice == null) {
+      res.status(400).send("service not found..");
+    } else {
+      res.status(200).send(getservice);
     }
   } catch (error) {
     res.status(500).send(error);
@@ -260,5 +268,6 @@ module.exports = {
   editSubService,
   getsubservicebyservice,
   searchbyid,
-  getsubservicebyid
+  getsubservicebyid,
+  getservicesearchbyid,
 };

@@ -30,7 +30,7 @@ app.patch(
   upload.single("image"),
   statusupdate
 );
-app.post("/HomeService/Booking/CityName", City);
+app.post("/HomeService/Booking/CityName",upload.single("image"), City);
 app.get("/HomeService/Booking/getcityname", getcityname);
 
 module.exports = app;

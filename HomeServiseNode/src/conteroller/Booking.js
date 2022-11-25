@@ -71,6 +71,7 @@ const CreBooking = async (req, res) => {
 
 const City = async (req, res) => {
   try {
+    console.log(req.body)
     if (req.body.name == undefined || req.body.name == "") {
       res.status(400).send("please enter cityname");
     } 
