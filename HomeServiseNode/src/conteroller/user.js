@@ -9,25 +9,25 @@ let isMatch = "";
 //sign up router.....
 const register = async (req, res) => {
   try {
-    console.log(req.body.formdata.email);
-    if (req.body.formdata.email === "") {
+    console.log(req.body);
+    if (req.body.email === "") {
       res.status(400).send({ mes: "please enter email" });
-    } else if (validator.validate(req.body.formdata.email) == false) {
+    } else if (validator.validate(req.body.email) == false) {
       res.status(400).send({ mes: "please enter valid email" });
-    } else if (req.body.formdata.password === "") {
+    } else if (req.body.password === "") {
       res.status(400).send({ mes: "please enter password" });
     } else {
       let haspass = "";
-      haspass = await bcrypt.hash(req.body.formdata.password, 10);
+      haspass = await bcrypt.hash(req.body.password, 10);
       let data = new user({
-        email: req.body.formdata.email,
+        email: req.body.email,
         password: haspass,
       });
       await data
         .save()
         .then((result) => {
           console.log("result:", result);
-          mailsend({ email: req.body.formdata.email });
+          mailsend({ email: req.body.email });
           res.status(201).json({ mes: "sign up done...", signup: true });
         })
         .catch((err) => {
@@ -42,27 +42,23 @@ const register = async (req, res) => {
 //sign in router...
 const login = async (req, res) => {
   try {
-    console.log(validator.validate(req.body.formdata.email));
     let data = await user.find({
-      email: req.body.formdata.email,
+      email: req.body.email,
     });
-    if (req.body.formdata.email === "") {
+    if (req.body.email === "") {
       res.status(400).send({ mes: "please enter email" });
-    } else if (req.body.formdata.password === "") {
+    } else if (req.body.password === "") {
       res.status(400).send({ mes: "please enter password.." });
-    } else if (validator.validate(req.body.formdata.email) == false) {
+    } else if (validator.validate(req.body.email) == false) {
       res.status(400).send({ mes: "please enter valid email address.." });
     } else if (data.length != 0) {
-      isMatch = await bcrypt.compare(
-        req.body.formdata.password,
-        data[0].password
-      );
+      isMatch = await bcrypt.compare(req.body.password, data[0].password);
       console.log(data[0].password);
       if (isMatch == true)
         res.status(200).json({
-          email: req.body.formdata.email,
+          email: req.body.email,
           login: true,
-          Token: auth(req.body.formdata.email, req.body.formdata.password),
+          Token: auth(req.body.email, req.body.password),
         });
       else res.status(400).send({ mes: "Wrong Credentials1.." });
     } else if (data.length == 0) {
@@ -119,7 +115,8 @@ const changepassword = async (req, res) => {
 };
 const getuserdata = async (req, res) => {
   try {
-    let userdata = await signup.find();
+    let userdata = await user.find();
+    console.log("////////////////////", userdata);
     if (userdata == null) {
       res.status(400).send("not user data");
     } else {

@@ -20,9 +20,7 @@ const getBookingdata = async (req, res) => {
 };
 const CreBooking = async (req, res) => {
   try {
-    console.log(req.body)
     jsonwebtoken.verify(req.token, "screatekey", async (err, authdata) => {
-
       if (req.body.name == "" || req.body.name == undefined) {
         res.status(400).send("please enter your name");
       } else if (req.body.number == "" || req.body.number == undefined) {
@@ -39,28 +37,26 @@ const CreBooking = async (req, res) => {
         res.status(400).send("please enter your delivery address");
       } else if (req.body.city == "" || req.body.city == undefined) {
         res.status(400).send("please select city ");
-      } 
-      else if (req.body.date == "" || req.body.date == undefined) {
+      } else if (req.body.date == "" || req.body.date == undefined) {
         res.status(400).send("please select delivery date");
       } else if (req.body.time == "" || req.body.time == undefined) {
         res.status(400).send("please select delivery time");
-      } 
-      else {
+      } else {
         data = new Booking({
           name: req.body.name,
           contactnumber: req.body.number,
           billingaddress: req.body.billingaddress,
           deliveryadress: req.body.deliveryadress,
           city: req.body.city,
-          date: req.body.date.substring(0,10),
+          date: req.body.date.substring(0, 10),
           time: req.body.time,
-          charge:req.body.charge,
-          status:req.body.status,
-          servicename:req.body.servicename
+          charge: req.body.charge,
+          status: req.body.status,
+          servicename: req.body.servicename,
         });
         result = await data
           .save()
-          .then((result) => res.status(200).send(data))
+          .then((result) => res.status(200).send({ data: data, create: true }))
           .catch((err) => res.status(400).send({ mes: "no date available.." }));
       }
     });
@@ -71,21 +67,19 @@ const CreBooking = async (req, res) => {
 
 const City = async (req, res) => {
   try {
-    console.log(req.body)
     if (req.body.name == undefined || req.body.name == "") {
       res.status(400).send("please enter cityname");
-    } 
+    }
     if (req.body.pincode == undefined || req.body.pincode == "") {
       res.status(400).send("please enter pincode");
-    } 
-    else {
+    } else {
       data = new city({
         name: req.body.name,
-        pincode:req.body.pincode
+        pincode: req.body.pincode,
       });
       result = await data
         .save()
-        .then((result) => res.status(200).send(data))
+        .then((result) => res.status(200).send({ data: data, create: true }))
         .catch((err) => res.status(400).send({ mes: "no date available.." }));
     }
   } catch (error) {
@@ -118,7 +112,6 @@ const availabletime = async (req, res) => {
         .catch((err) => res.status(400).send({ mes: "no date available.." }));
     }
   } catch (error) {
-    console.log(error);
     res.status(500).send(error);
   }
 };
@@ -135,24 +128,19 @@ const getavailabletime = async (req, res) => {
   }
 };
 const statusupdate = async (req, res) => {
-
   try {
-
     let editService = {
-      status:req.body.status
+      status: req.body.status,
     };
 
     let data = await Booking.findByIdAndUpdate(req.params, editService);
 
-   
-     if (data == null) {
-        res.status(400).send("data not found");
-      } else {
-        res.status(200).send(data);
-      }
-  
+    if (data == null) {
+      res.status(400).send("data not found");
+    } else {
+      res.status(200).send(data);
+    }
   } catch (error) {
-    console.log(error);
     res.status(500).send(error);
   }
 };
@@ -160,7 +148,7 @@ const statusupdate = async (req, res) => {
 const getbookingdatabyid = async (req, res) => {
   try {
     let getbooingdata = await Booking.find({ _id: req.params });
-   
+
     if (getbooingdata == null) {
       res.status(400).send("data not found..");
     } else {
@@ -171,12 +159,12 @@ const getbookingdatabyid = async (req, res) => {
   }
 };
 module.exports = {
- getBookingdata,
+  getBookingdata,
   CreBooking,
   City,
   getcityname,
   availabletime,
   getavailabletime,
   statusupdate,
-  getbookingdatabyid
+  getbookingdatabyid,
 };

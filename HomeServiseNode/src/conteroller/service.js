@@ -11,7 +11,6 @@ let result1 = "",
   URL = "";
 const createService = async (req, res) => {
   try {
-    console.log(req.body.formdata);
     jsonwebtoken.verify(req.token, "screatekey", async (err, authdata) => {
       if (err) res.send(err);
       else console.log(req.body);
@@ -44,6 +43,7 @@ const createService = async (req, res) => {
 const getservice = async (req, res) => {
   try {
     let getservice = await service.find();
+    console.log("service.....", getservice);
     if (getservice == null) {
       res.status(400).send("service not found..");
     } else {
@@ -55,7 +55,6 @@ const getservice = async (req, res) => {
 };
 const createSubService = async (req, res) => {
   try {
-    console.log(req.body);
     let getservice = await service.find({ _id: req.body.serviceid });
     if (req.body.servicename === undefined || "") {
       res.status(400).send({ mes: "please enter servicename" });
@@ -78,12 +77,12 @@ const createSubService = async (req, res) => {
       let result = "";
       result = data
         .save()
-        .then((result) => res.status(201).json({ mes: "Add Service", result1 }))
+        .then((result) =>
+          res.status(201).json({ mes: "Add Service", result1, data: true })
+        )
         .catch((err) => res.status(400).send({ mes: err }));
-      console.log(res);
     }
   } catch (error) {
-    console.log(error);
     res.status(500).send({ mes: error });
   }
 };
@@ -121,7 +120,7 @@ const deleteService = async (req, res) => {
       } else if (data == null) {
         res.status(400).send({ message: "service not found" });
       } else {
-        res.status(200).send(data);
+        res.status(200).send({ data: data, delete: true });
       }
     });
   } catch (error) {
@@ -138,7 +137,7 @@ const deleteSubService = async (req, res) => {
       } else if (data == null) {
         res.status(400).send({ message: "SubService not found" });
       } else {
-        res.status(200).send(data);
+        res.status(200).send({ data: data, delete: true });
       }
     });
   } catch (error) {
@@ -147,7 +146,6 @@ const deleteSubService = async (req, res) => {
 };
 const editService = async (req, res) => {
   let servicedata = await service.findById(req.params);
-
   try {
     try {
       if (req.file !== undefined) {
@@ -174,11 +172,10 @@ const editService = async (req, res) => {
       } else if (data == null) {
         res.status(400).send("service not found");
       } else {
-        res.status(200).send(data);
+        res.status(200).send({ data: data, edit: true });
       }
     });
   } catch (error) {
-    console.log(error);
     res.status(500).send(error);
   }
 };
@@ -208,11 +205,10 @@ const editSubService = async (req, res) => {
       } else if (data == null) {
         res.status(400).send("artical not found");
       } else {
-        res.status(200).send(data);
+        res.status(200).send({ data: data, edit: true });
       }
     });
   } catch (error) {
-    console.log("error.....", error);
     res.status(500).send(error);
   }
 };
@@ -224,7 +220,7 @@ const searchbyid = async (req, res) => {
     if (getservice == null) {
       res.status(400).send("service not found..");
     } else {
-      res.status(200).send(getservice[0].servicename);
+      res.status(200).send({servicename:getservice[0].servicename});
     }
   } catch (error) {
     res.status(500).send(error);

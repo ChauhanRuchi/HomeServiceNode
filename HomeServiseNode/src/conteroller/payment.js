@@ -23,14 +23,12 @@ const payment = async (req, res) => {
                 })
         
     } catch (error) {
-        console.log(error)
         res.status(500).send({message:"internal server error"})
     }
    
   };
   const verify = async (req, res) => {
     try {
-        console.log("..",req.body)
         const{
             razorpay_order_id,
             razorpay_payment_id,
@@ -49,7 +47,6 @@ const payment = async (req, res) => {
         }
 
     } catch (error) {
-        console.log(".....",error)
         
     }
   };
